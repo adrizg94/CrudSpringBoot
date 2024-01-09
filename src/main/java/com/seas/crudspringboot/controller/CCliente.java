@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-//@RequestMapping("/api/v1/crud")
 public class CCliente {
 
     @Autowired
@@ -44,15 +43,8 @@ public class CCliente {
     }
 
     @PostMapping("/clientes/{id}")
-    public String updateCliente(@PathVariable("id") Long id,@ModelAttribute("cliente") Cliente cliente) {
-        Cliente newcliente = service.getClienteId(id);
-        newcliente.setId(cliente.getId());
-        newcliente.setNombre(cliente.getNombre());
-        newcliente.setApellidos(cliente.getApellidos());
-        newcliente.setDni(cliente.getDni());
-        newcliente.setTelefono(cliente.getTelefono());
-        newcliente.setEmail(cliente.getEmail());
-        service.addCliente(newcliente);
+    public String updateCliente(@ModelAttribute("cliente") Cliente cliente) {
+        service.addCliente(cliente);
         return "redirect:/clientes";
     }
 
