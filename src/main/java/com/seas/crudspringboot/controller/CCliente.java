@@ -13,11 +13,6 @@ public class CCliente {
     @Autowired
     private ICliente service;
 
-    @GetMapping("/index")
-    public String getIndex() {
-        return "index";
-    }
-
     @GetMapping("/clientes")
     public String getClientes(Model modelo) {
         modelo.addAttribute("clientes", service.getClientes());

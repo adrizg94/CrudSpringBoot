@@ -22,6 +22,8 @@ public class Empleado {
     private String email;
     @Column(nullable = false, length = 10)
     private String fechaContrato;
+    @Column(nullable = false, length = 25)
+    private String password;
 
     public Empleado() {}
 
@@ -100,17 +102,26 @@ public class Empleado {
         this.fechaContrato = fechaContrato;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "Empleado{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", apellidos='" + apellidos + '\'' +
-                ", edad=" + edad +
+                ", edad='" + edad + '\'' +
                 ", dni='" + dni + '\'' +
-                ", telefono=" + telefono +
+                ", telefono='" + telefono + '\'' +
                 ", email='" + email + '\'' +
                 ", fechaContrato='" + fechaContrato + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 
