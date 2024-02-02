@@ -6,14 +6,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
-<body>
+<body onload="addEmpleadoId()">
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" th:href="@{/clientes}">Clientes</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/empleados}">Empleados</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/productos}">Productos</a></li>
-            <li class="nav-item" style="margin-left: 1vh"><a th:href="@{/tpv}" class="btn btn-success">TPV</a></li>
+            <li class="nav-item" style="margin-left: 1vh"><a th:href="@{/tpv/{id}(id=${empleadoId})}" class="btn btn-success">TPV</a></li>
         </ul>
         <ul class="navbar-nav ms-auto" style="margin-right: 1vh">
             <li class="nav-item"><a th:href="@{/index}" class="btn btn-warning">Log out</a></li>
@@ -27,6 +27,16 @@
         </div>
     </div>
 </div>
+<form id="formulario" action="#" th:action="@{/tpv/{id}(id=${empleadoId})}" th:object="${factura}" method="post">
+    <input type="hidden" id="clienteId" th:field="*{cliente.id}">
+    <input type="hidden" id="empleado" th:field="*{empleado.id}">
+    <input type="hidden" id="empleadoId" th:value="${empleadoId}">
+    <input type="hidden" id="precio" th:field="*{precio}">
+    <div th:each="producto, itemStat : *{productos}">
+        <input type="hidden" th:field="*{productos[__${itemStat.index}__].id}">
+        <input type="hidden" th:field="*{productos[__${itemStat.index}__].stock}" th:id="*{productos[__${itemStat.index}__].id}">
+    </div>
+</form>
 <div class="row justify-content-around">
     <div class="col-md-6">
         <table class="table table-striped table-bordered align-middle">
@@ -41,6 +51,24 @@
             </thead>
             <tbody id="factura">
             </tbody>
+            <tfoot class="table-warning">
+            <tr>
+                <td colspan="4" class="text-end">
+                    <select class="form-select" id="clientes" onchange="getSelectedCliente()">
+                        <option hidden selected>Selecciona un cliente</option>
+                        <option th:each="cliente:${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre} + ' ' + ${cliente.apellidos}"></option>
+                    </select>
+                </td>
+                <td style="width: 15vh; padding: 0vh">
+                    <div class="container p-0">
+                        <div class="row justify-content-around">
+                            <h4 class="table-warning col-md-4 align-self-center p-0" id="price"></h4>
+                            <button class="btn btn-success col-md-4 my-1" form="formulario"><img th:src="@{'/images/compra.png'}" alt="Compra" style="width: 2vh"></button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
         </table>
     </div>
     <div class="col-md-6">
@@ -50,14 +78,15 @@
                         th:data-nombre="${producto.nombre}"
                         th:data-precio="${producto.precio}"
                         th:data-stock="${producto.stock}"
-                        th:onclick="add(this.getAttribute('data-nombre'), this.getAttribute('data-precio'), this.getAttribute('data-stock'))"
-                        style="height: 22vh"><img th:src="@{'./images/' + ${producto.imagen}}" style="width: 20vh; max-height: 20vh"  th:alt="${'Imagen de ' + producto.nombre}"></button>
+                        th:data-id="${producto.id}"
+                        th:onclick="add(this.getAttribute('data-nombre'), this.getAttribute('data-precio'), this.getAttribute('data-stock'), this.getAttribute('data-id'))"
+                        style="height: 22vh"><img th:src="@{'/images/' + ${producto.imagen}}" style="width: 20vh; max-height: 20vh"  th:alt="${'Imagen de ' + producto.nombre}"></button>
             </div>
         </div>
     </div>
 </div>
 <script>
-    function add(nombre, precio, stock) {
+    function add(nombre, precio, stock, id) {
 
         let stockTabla = stock;
         let tabla = document.getElementById("factura");
@@ -69,11 +98,14 @@
             let celda2 = fila.insertCell(1);
             celda2.appendChild(document.createTextNode(stockTabla))
             let celda3 = fila.insertCell(2);
-            celda3.appendChild(document.createTextNode(precio))
+            celda3.appendChild(document.createTextNode(precio + "€"))
             let celda4 = fila.insertCell(3);
             celda4.appendChild(document.createTextNode(1));
             let celda5 = fila.insertCell(4);
             celda5.appendChild(document.createTextNode(parseFloat(precio) * parseInt(fila.cells[3].innerText)));
+            document.getElementById("price").innerHTML = precio;
+            document.getElementById(id).value --;
+            addPrecio();
         } else {
             let newRow = true;
             let repeat = false;
@@ -83,7 +115,10 @@
                     tabla.rows[i].cells[1].innerHTML --;
                     tabla.rows[i].cells[3].innerHTML ++;
                     tabla.rows[i].cells[4].innerHTML = (parseInt(tabla.rows[i].cells[3].innerText) * parseFloat(precio)).toFixed(2);
+                    document.getElementById("price").innerHTML = (parseFloat(document.getElementById("price").innerText) + parseFloat(precio)).toFixed(2);
                     newRow = false;
+                    document.getElementById(id).value --;
+                    addPrecio();
                 }
             }
             if (newRow && !repeat && stockTabla>0) {
@@ -94,14 +129,31 @@
                 let celda2 = fila.insertCell(1);
                 celda2.appendChild(document.createTextNode(stockTabla))
                 let celda3 = fila.insertCell(2);
-                celda3.appendChild(document.createTextNode(precio))
+                celda3.appendChild(document.createTextNode(precio + "€"))
                 let celda4 = fila.insertCell(3);
                 celda4.appendChild(document.createTextNode(1));
                 let celda5 = fila.insertCell(4);
                 celda5.appendChild(document.createTextNode(parseFloat(precio) * parseInt(fila.cells[3].innerText)));
+                document.getElementById("price").innerHTML = (parseFloat(document.getElementById("price").innerText) + parseFloat(precio)).toFixed(2);
+                document.getElementById(id).value --;
+                addPrecio();
             }
         }
     }
+
+    function getSelectedCliente() {
+        let elemento = document.getElementById("clientes").value;
+         document.getElementById("clienteId").value = elemento;
+    }
+
+    function addEmpleadoId() {
+        document.getElementById("empleado").value = document.getElementById("empleadoId").value;
+    }
+
+    function addPrecio() {
+        document.getElementById("precio").value = parseFloat(document.getElementById("price").innerText);
+    }
+
 </script>
 </body>
 </html>

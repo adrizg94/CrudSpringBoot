@@ -14,6 +14,7 @@ public class SCliente implements ICliente {
 
     @Autowired
     private RCliente repository;
+
     @Override
     public List<Cliente> getClientes() {
         return repository.findAll();

@@ -27,7 +27,6 @@ public class SProducto implements IProducto {
     @Override
     public void addProducto(Producto producto) {
         repository.save(producto);
-
     }
 
     @Override

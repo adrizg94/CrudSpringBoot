@@ -15,15 +15,23 @@ public class SEmpleado implements IEmpleado {
     private REmpleado repository;
 
     @Override
-    public List<Empleado> getEmpleados() {return repository.findAll();}
+    public List<Empleado> getEmpleados() {
+        return repository.findAll();
+    }
 
     @Override
-    public Empleado getEmpleadoId(Long id) {return repository.findById(id).get();}
+    public Empleado getEmpleadoId(Long id) {
+        return repository.findById(id).get();
+    }
 
     @Override
-    public void addEmpleado(Empleado empleado) {repository.save(empleado);}
+    public void addEmpleado(Empleado empleado) {
+        repository.save(empleado);
+    }
 
     @Override
-    public void deleteEmpleado(Long id) {repository.deleteById(id);}
+    public void deleteEmpleado(Long id) {
+        repository.deleteById(id);
+    }
 
 }

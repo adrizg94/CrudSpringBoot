@@ -18,33 +18,6 @@ public class CEmpleado {
     @Autowired
     private IEmpleado service;
 
-    @GetMapping(value = {"/","/index"})
-    public String getIndex(Model modelo) {
-        modelo.addAttribute("user", service.getEmpleados());
-        return "index";
-    }
-    @PostMapping("/index")
-    public String login(@ModelAttribute("user") Empleado empleado) {
-        List<Empleado> empleados = service.getEmpleados();
-        boolean log = false;
-        for (int i=0; i<empleados.size(); i++) {
-            if (empleado.getDni().equals(empleados.get(i).getDni()) && empleado.getPassword().equals(empleados.get(i).getPassword())) {
-                log = true;
-                break;
-            }
-        }
-        if (log) {
-            return "redirect:/tpv";
-        } else {
-            return "redirect:/bad_login";
-        }
-    }
-    @GetMapping("/bad_login")
-    public String badLogin() {
-        return "bad_login";
-    }
-
-
     @GetMapping("/empleados")
     public String getEmpleados(Model modelo) {
         modelo.addAttribute("empleados", service.getEmpleados());

@@ -2,6 +2,8 @@ package com.seas.crudspringboot.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "productos")
 public class Producto {

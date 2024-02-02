@@ -2,6 +2,8 @@ package com.seas.crudspringboot.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="clientes")
 public class Cliente {
@@ -18,6 +20,8 @@ public class Cliente {
     private String telefono;
     @Column(nullable = false, unique = true, length = 50)
     private String email;
+    @OneToMany(targetEntity = Factura.class, mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Factura> facturas;
 
     public Cliente() {}
 
@@ -76,6 +80,14 @@ public class Cliente {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
     }
 
     @Override

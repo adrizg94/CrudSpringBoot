@@ -2,6 +2,8 @@ package com.seas.crudspringboot.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "empleados")
 public class Empleado {
@@ -24,6 +26,8 @@ public class Empleado {
     private String fechaContrato;
     @Column(nullable = false, length = 25)
     private String password;
+    @OneToMany(targetEntity = Factura.class, mappedBy = "empleado", fetch = FetchType.LAZY)
+    private List<Factura> facturas;
 
     public Empleado() {}
 
@@ -108,6 +112,14 @@ public class Empleado {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
     }
 
     @Override

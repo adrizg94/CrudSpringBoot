@@ -65,11 +65,10 @@ public class CProducto {
         service.addProducto(producto);
         return "redirect:/productos";
     }
-
-    @GetMapping("/tpv")
-    public String getTPV(Model modelo) {
-        modelo.addAttribute("productos", service.getProdctos());
-        return "tpv";
+    @GetMapping("/productos/borrar/{id}")
+    public String deleteProducto(@PathVariable("id") Long id) {
+        service.deleteProdcto(id);
+        return "redirect:/productos";
     }
 
 }
