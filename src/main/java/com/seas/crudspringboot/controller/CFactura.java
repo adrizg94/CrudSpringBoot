@@ -10,8 +10,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class CFactura {
@@ -24,6 +29,47 @@ public class CFactura {
     private SEmpleado serviceEmpleado;
     @Autowired
     private SCliente serviceCliente;
+
+    @GetMapping("/facturas")
+    public String getFacturas(Model modelo) {
+        modelo.addAttribute("facturas", service.getFacturas());
+        return "facturas";
+    }
+
+    @GetMapping("/facturas/detalles/{id}")
+    public String getDetallesFactura(Model modelo, @PathVariable("id") Long id) throws ParseException {
+
+        List<Producto> productosBD = service.getFacturaId(id).getProductos();
+        List<Producto> productos = new ArrayList<>();
+
+        for (int i=0; i<productosBD.size(); i++) {
+            productosBD.get(i).setStock(1);
+        }
+        for (int i=0; i<productosBD.size(); i++) {
+            Producto productoBD = productosBD.get(i);
+            if (productos.contains(productoBD)) {
+                int cant = productos.get(productos.indexOf(productoBD)).getStock() + 1;
+                productoBD.setStock(cant);
+                productos.set(productos.indexOf(productoBD), productoBD);
+            } else {
+                productos.add(productoBD);
+            }
+        }
+        for (int i=0; i<productos.size(); i++) {
+            float precio = productos.get(i).getPrecio() * productos.get(i).getStock();
+            NumberFormat df = NumberFormat.getNumberInstance(Locale.UK);
+            df.setMaximumFractionDigits(2);
+            productos.get(i).setDescripcion(df.format(precio));
+        }
+
+        modelo.addAttribute("productos", productos);
+        return "detalles_factura";
+    }
+    @GetMapping("/facturas/borrar/{id}")
+    public String deleteFactura(@PathVariable("id") Long id) {
+        service.deleteFactura(id);
+        return "redirect:/facturas";
+    }
 
     @GetMapping("/tpv/{id}")
     public String getTPV(Model modelo, @PathVariable("id") Long id) {
@@ -48,9 +94,18 @@ public class CFactura {
         for (int i=0; i<listaProductos.size(); i++) {
             int stockBD = listaProductos.get(i).getStock();
             int stockFactura = factura.getProductos().get(i).getStock();
+            boolean update = false;
             while (stockBD != stockFactura) {
+                update = true;
                 listaFactura.add(serviceProducto.getProdctoId(listaProductos.get(i).getId()));
                 stockBD--;
+            }
+            if (update) {
+                Long id = factura.getProductos().get(i).getId();
+                int stock = factura.getProductos().get(i).getStock();
+                Producto producto = serviceProducto.getProdctoId(id);
+                producto.setStock(stock);
+                serviceProducto.addProducto(producto);
             }
         }
 

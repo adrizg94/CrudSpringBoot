@@ -22,11 +22,11 @@ public class Factura {
     @ManyToOne(targetEntity = Empleado.class)
     @JoinColumn(name = "id_empleado")
     private Empleado empleado;
-    @ManyToMany(targetEntity = Producto.class, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = Producto.class, fetch = FetchType.EAGER)
     private List<Producto> productos;
 
     public Factura() {
-        fecha = new SimpleDateFormat("dddMMyyyy_HHmmss").format(Calendar.getInstance().getTime());
+        fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 
     public Factura(Long id, Cliente cliente, Empleado empleado, List<Producto> productos) {
