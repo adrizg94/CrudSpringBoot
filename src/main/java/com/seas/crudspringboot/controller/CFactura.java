@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class CFactura {
     }
 
     @GetMapping("/facturas/detalles/{id}")
-    public String getDetallesFactura(Model modelo, @PathVariable("id") Long id) throws ParseException {
+    public String getDetallesFactura(Model modelo, @PathVariable("id") Long id) {
 
         List<Producto> productosBD = service.getFacturaId(id).getProductos();
         List<Producto> productos = new ArrayList<>();
