@@ -28,10 +28,9 @@
         </div>
     </div>
 </div>
-<form id="formulario" action="#" th:action="@{/tpv/{id}(id=${empleadoId})}" th:object="${factura}" method="post">
+<form id="formulario" action="#" th:action="@{/tpv/{id}(id=${factura.empleado.id})}" th:object="${factura}" method="post">
     <input type="hidden" id="clienteId" th:field="*{cliente.id}">
     <input type="hidden" id="empleado" th:field="*{empleado.id}">
-    <input type="hidden" id="empleadoId" th:value="${empleadoId}">
     <input type="hidden" id="precio" th:field="*{precio}">
     <div th:each="producto, itemStat : *{productos}">
         <input type="hidden" th:field="*{productos[__${itemStat.index}__].id}">
@@ -74,7 +73,7 @@
     </div>
     <div class="col-md-6">
         <div class="row">
-            <div class="col-md-3" th:each="producto:${productos}">
+            <div class="col-md-3" th:each="producto:${factura.productos}">
                 <button class="btn btn-light"
                         th:data-nombre="${producto.nombre}"
                         th:data-precio="${producto.precio}"
@@ -147,9 +146,9 @@
          document.getElementById("clienteId").value = elemento;
     }
 
-    function addEmpleadoId() {
-        document.getElementById("empleado").value = document.getElementById("empleadoId").value;
-    }
+    // function addEmpleadoId() {
+    //     document.getElementById("empleado").value = document.getElementById("empleadoId").value;
+    // }
 
     function addPrecio() {
         document.getElementById("precio").value = parseFloat(document.getElementById("price").innerText);

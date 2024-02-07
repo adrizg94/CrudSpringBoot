@@ -20,7 +20,7 @@ public class CProducto {
     private SProducto service;
     @GetMapping("/productos")
     public String getProductos(Model modelo) {
-        modelo.addAttribute("productos", service.getProdctos());
+        modelo.addAttribute("productos", service.get());
         return "productos";
     }
     @GetMapping("/productos/nuevo")
@@ -30,44 +30,24 @@ public class CProducto {
     }
     @PostMapping("productos/nuevo")
     public String newProducto(@ModelAttribute("producto") Producto producto, @RequestParam("file") MultipartFile imagen) {
-        Path directorioImg = Paths.get("src//main//resources//static/images");
-        Path rutaImg = Paths.get(directorioImg.toFile().getAbsolutePath() + "//" + imagen.getOriginalFilename());
-
-        try {
-            byte[] byteImg = imagen.getBytes();
-            Files.write(rutaImg, byteImg);
-            producto.setImagen(imagen.getOriginalFilename());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        service.addProducto(producto);
+        service.addImagen(producto, imagen);
+        service.add(producto);
         return "redirect:/productos";
     }
     @GetMapping("productos/editar/{id}")
     public String getUpdateProducto(@PathVariable("id") Long id, Model modelo) {
-        modelo.addAttribute("producto", service.getProdctoId(id));
+        modelo.addAttribute("producto", service.getId(id));
         return "editar_producto";
     }
     @PostMapping("/productos/editar/{id}")
     public String updateProducto(@ModelAttribute("producto") Producto producto, @RequestParam("file") MultipartFile imagen) {
-        Path directorioImg = Paths.get("src//main//resources//static/images");
-        Path rutaImg = Paths.get(directorioImg.toFile().getAbsolutePath() + "//" + imagen.getOriginalFilename());
-
-        try {
-            byte[] byteImg = imagen.getBytes();
-            Files.write(rutaImg, byteImg);
-            producto.setImagen(imagen.getOriginalFilename());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        service.addProducto(producto);
+        service.addImagen(producto, imagen);
+        service.add(producto);
         return "redirect:/productos";
     }
     @GetMapping("/productos/borrar/{id}")
     public String deleteProducto(@PathVariable("id") Long id) {
-        service.deleteProdcto(id);
+        service.delete(id);
         return "redirect:/productos";
     }
 
